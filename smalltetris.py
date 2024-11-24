@@ -20,7 +20,7 @@ COLORS = {
 class TetrisPiece:
     def __init__(self):
         self.shape = [[1, 1, 1], [0, 1, 0]]  # Пример фигуры
-        self.color = COLORS['cyan']
+        self.color = random.choice(list(COLORS.values()))  # Случайный цвет
         self.x = 4  # Начальная позиция по x
         self.y = 0  # Начальная позиция по y
 
@@ -37,6 +37,9 @@ class TetrisGame:
         self.clock = pygame.time.Clock()
         self.running = True
         self.fall_time = 0
+        self.fall_speed = 500  # Скорость падения в миллисекундах
+        self.last_rotate_time = 0  # Время последнего вращения
+        self.rotate_delay = 200  # Задержка между вращениями в миллисекундах
 
     def draw_board(self):
         for y in range(len(self.board)):
@@ -44,6 +47,13 @@ class TetrisGame:
                 color = COLORS['black'] if self.board[y][x] == 0 else self.board[y][x]
                 pygame.draw.rect(self.screen, color, (x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE), 0)
                 pygame.draw.rect(self.screen, COLORS['black'], (x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE), 1)
+
+        # Отрисовка текущей фигуры
+        for y, row in enumerate(self.current_piece.shape):
+            for x, value in enumerate(row):
+                if value:
+                    pygame.draw.rect(self.screen, self.current_piece.color,
+                                     ((self.current_piece.x + x) * BLOCK_SIZE, (self.current_piece.y + y) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE), 0)
 
     def check_collision(self, dx=0, dy=0):
         for y, row in enumerate(self.current_piece.shape):
@@ -79,47 +89,37 @@ class TetrisGame:
 
     def handle_input(self):
         keys = pygame.key.get_pressed()
+        current_time = pygame.time.get_ticks()
         if keys[pygame.K_LEFT] and not self.check_collision(dx=-1):
             self.current_piece.x -= 1
         if keys[pygame.K_RIGHT] and not self.check_collision(dx=1):
             self.current_piece.x += 1
         if keys[pygame.K_DOWN]:
             self.drop_piece()  # Ускоренное падение
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_UP] and current_time - self.last_rotate_time > self.rotate_delay:
             self.current_piece.rotate()
             if self.check_collision():
                 self.current_piece.rotate()  # Возврат, если столкновение
+            self.last_rotate_time = current_time
 
     def play(self):
         while self.running:
-            self.screen.fill(COLORS['black'])
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
 
             self.handle_input()
 
-            self.fall_time += self.clock.get_time()
-            if self.fall_time > 1000:  # Падение фигуры каждые 1000 мс (1 секунда)
+            # Обновление времени падения
+            self.fall_time += self.clock.tick(30)
+            if self.fall_time > self.fall_speed:
                 self.drop_piece()
                 self.fall_time = 0
 
+            self.screen.fill(COLORS['black'])
             self.draw_board()
-            self.draw_piece()
-
             pygame.display.flip()
-            self.clock.tick(60)  # Ограничиваем FPS
 
-    def draw_piece(self):
-        for y, row in enumerate(self.current_piece.shape):
-            for x, value in enumerate(row):
-                if value:
-                    pygame.draw.rect(self.screen, self.current_piece.color,
-                                     ((self.current_piece.x + x) * BLOCK_SIZE, (self.current_piece.y + y) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE), 0)
-
-# Пример запуска игры
 if __name__ == "__main__":
     game = TetrisGame()
     game.play()
-    pygame.quit()

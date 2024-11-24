@@ -9,6 +9,7 @@ pygame.init()
 # Константы
 WIDTH, HEIGHT = 800, 600
 FPS = 60
+IMAGE_MAX_WIDTH, IMAGE_MAX_HEIGHT = 100, 100
 
 # Цвета
 WHITE = (255, 255, 255)
@@ -21,23 +22,44 @@ pygame.display.set_caption("Меню игр")
 # Шрифт
 font = pygame.font.Font(None, 74)
 
+# Загрузка и масштабирование изображений
+def load_and_scale_image(path):
+    image = pygame.image.load(path)
+    image = pygame.transform.scale(image, (IMAGE_MAX_WIDTH, IMAGE_MAX_HEIGHT))
+    return image
+
+# Загрузка изображений
+images = {
+    "  Пингпонг": pygame.image.load("pingpong.png"),
+    "Змейка": pygame.image.load("snake.png"),
+    "Тетрис": pygame.image.load("tetris.png"),
+    "Выжить": pygame.image.load("war.png"),
+}
+
 # Кнопки
 buttons = [
-    {"text": "Пинг-понг", "action": "smallpingpong.py"},
+    {"text": "  Пингпонг", "action": "smallpingpong.py"},
     {"text": "Змейка", "action": "smallzmeika.py"},
     {"text": "Тетрис", "action": "smalltetris.py"},
-    {"text": "Игра на выживыание", "action": "smallwar.py"},
+    {"text": "Выжить", "action": "smallwar.py"},
     {"text": "Выход", "action": "exit"},
 ]
 
 def draw_menu():
-    screen.fill(WHITE)
+    screen.fill(BLACK)  # Изменяем цвет фона на чёрный
     y_offset = 100
     for index, button in enumerate(buttons):
-        text = font.render(button["text"], True, BLACK)
+        text = font.render(button["text"], True, WHITE)  # Изменяем цвет текста на белый
         rect = text.get_rect(center=(WIDTH // 2, y_offset))
         screen.blit(text, rect)
         button["rect"] = rect  # Сохраняем прямоугольник для проверки кликов
+
+        # Отображение изображения
+        if button["text"] in images:
+            image = images[button["text"]]
+            image_rect = image.get_rect(center=(WIDTH // 2 - 150, y_offset))
+            screen.blit(image, image_rect)
+
         y_offset += 100
     pygame.display.flip()
 
