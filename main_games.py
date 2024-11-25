@@ -14,6 +14,9 @@ IMAGE_MAX_WIDTH, IMAGE_MAX_HEIGHT = 100, 100
 # Цвета
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+ORANGE = (255, 165, 0)
+GREEN = (0, 128, 0)
 
 # Настройка окна
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -46,10 +49,20 @@ buttons = [
 ]
 
 def draw_menu():
-    screen.fill(BLACK)  # Изменяем цвет фона на чёрный
+    screen.fill(ORANGE)  # Изменяем цвет фона на оранжевый
     y_offset = 100
     for index, button in enumerate(buttons):
-        text = font.render(button["text"], True, WHITE)  # Изменяем цвет текста на белый
+        # Изменяем цвет текста на фиолетовый, независимо от кнопки
+        text = font.render(button["text"], True, GREEN)
+
+        # Если кнопка "Выход", то текст будет красным
+        if button["text"] == "Выход":
+            text_color = RED
+        else:
+            text_color = GREEN
+        
+        text = font.render(button["text"], True, text_color)
+
         rect = text.get_rect(center=(WIDTH // 2, y_offset))
         screen.blit(text, rect)
         button["rect"] = rect  # Сохраняем прямоугольник для проверки кликов
@@ -62,6 +75,7 @@ def draw_menu():
 
         y_offset += 100
     pygame.display.flip()
+
 
 def main():
     clock = pygame.time.Clock()
