@@ -46,10 +46,10 @@ buttons = [
 ]
 
 def draw_menu():
-    screen.fill(BLACK)  # Изменяем цвет фона на чёрный
+    screen.fill(ORANGE)  # Изменяем цвет фона на чёрный
     y_offset = 100
     for index, button in enumerate(buttons):
-        text = font.render(button["text"], True, WHITE)  # Изменяем цвет текста на белый
+        text = font.render(button["text"], True, VIOLET)  # Изменяем цвет текста на белый
         rect = text.get_rect(center=(WIDTH // 2, y_offset))
         screen.blit(text, rect)
         button["rect"] = rect  # Сохраняем прямоугольник для проверки кликов
