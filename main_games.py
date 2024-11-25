@@ -52,7 +52,7 @@ def draw_menu():
     screen.fill(ORANGE)  # Изменяем цвет фона на оранжевый
     y_offset = 100
     for index, button in enumerate(buttons):
-        # Изменяем цвет текста на фиолетовый, независимо от кнопки
+        # Изменяем цвет текста на зелёный, независимо от кнопки
         text = font.render(button["text"], True, GREEN)
 
         # Если кнопка "Выход", то текст будет красным
